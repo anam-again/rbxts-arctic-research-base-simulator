@@ -15,9 +15,20 @@ export class StarterPlayerService implements OnStart {
                     Name: 'ClipboardTool',
                     RequiresHandle: false,
                     CanBeDropped: false,
+                    TextureId: 'rbxassetid://74423743848032',
+                    ToolTip: 'Clipboard for important notes!'
                 })
                 clipboard.AddTag(TAGS.ClipboardTool);
                 clipboard.Parent = backpack;
+                const idBadge = Make('Tool', {
+                    Name: 'IDBadgeTool',
+                    RequiresHandle: false,
+                    CanBeDropped: false,
+                    TextureId: 'rbxassetid://88521476043586',
+                    ToolTip: 'Your ID badge!'
+                })
+                idBadge.AddTag(TAGS.IDBadgeTool);
+                idBadge.Parent = backpack;
             })
         })
     }

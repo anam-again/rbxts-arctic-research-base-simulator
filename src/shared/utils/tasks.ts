@@ -34,3 +34,12 @@ export function onCharacterAdded(player: Player, cb: (character: Model) => void)
         cb(character);
     })
 }
+
+export function linearTimeout<T>(retries: number, retryTime: number, cb: () => T | undefined) {
+    for (let i = 0; i < retries; i++) {
+        if (i >= retries) return undefined;
+        const res = cb();
+        if (res !== undefined) return res;
+        task.wait(retryTime);
+    }
+}

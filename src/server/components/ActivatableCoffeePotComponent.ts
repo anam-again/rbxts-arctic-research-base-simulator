@@ -2,8 +2,11 @@ import { OnStart } from "@flamework/core";
 import { BaseComponent, Component } from "@flamework/components";
 
 import { ASSET_IDS, TAGS } from "shared/globals";
-import { InsertService } from "@rbxts/services";
 import { createToolAndGiveAndEquip } from "server/utils/tools";
+import { Events } from "server/network";
+import { GuiAdornmentService } from "../services/GuiAdornmentService";
+import { createGUID } from "shared/utils/guid";
+import { PlayerExperienceService } from "server/services/PlayerExperienceService";
 
 
 interface ActivatableCoffeePot extends Model {
@@ -12,21 +15,19 @@ interface ActivatableCoffeePot extends Model {
 
 @Component({ tag: TAGS.ActivatableCoffeePotComponent })
 export class ActivatableCoffeePotComponent extends BaseComponent<{}, ActivatableCoffeePot> implements OnStart {
+    private id = createGUID();
+
+    constructor(private GuiAdornmentSerice: GuiAdornmentService, private PlayerExperienceService: PlayerExperienceService) {
+        super();
+    }
 
     onStart() {
         this.instance.ProximityPrompt.Triggered.Connect((player) => {
-            createToolAndGiveAndEquip(player, ASSET_IDS.CoffeeMugTool, 'CoffeeMugTool2', 'CoffeeMugTool');
+            createToolAndGiveAndEquip(player, ASSET_IDS.CoffeeMugTool, ['CoffeeMugTool', 'UntouchableOnDropComponent']);
+            this.PlayerExperienceService.giveDoubletappedExperience(player, 5, 10000, this.id);
+            this.GuiAdornmentSerice.asyncCreateAdornmentText(player, {
+                richText: 'Acquired Coffee'
+            })
         })
-    }
-
-    private giveCoffee(player: Player): void {
-        const tool = InsertService.LoadAsset(ASSET_IDS.CoffeeMugTool).Clone().WaitForChild("CoffeeMugTool2");
-        if (!tool.IsA('Tool')) throw error('Could not find tool in coffee mug model');
-        tool.Parent = player.WaitForChild('Backpack');
-        const hum = player.Character?.WaitForChild('Humanoid') as Humanoid;
-        tool.AddTag(TAGS.CoffeeMugTool);
-        if (hum) {
-            hum.EquipTool(tool);
-        }
     }
 }

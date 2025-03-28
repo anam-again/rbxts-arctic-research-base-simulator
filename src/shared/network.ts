@@ -20,7 +20,11 @@ interface ClientEvents {
 		dispatch: (actions: Array<BroadcastAction>) => void;
 		hydrate: () => void;
 		start: () => void;
-	}
+	};
+	setVoidLighting: () => void;
+	setRegularLighting: () => void;
+	initExperience: (experience: number) => void;
+	addExperience: (experience: number) => void;
 }
 
 interface ClientFunctions { }

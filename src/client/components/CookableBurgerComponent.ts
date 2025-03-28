@@ -2,8 +2,7 @@ import { OnStart } from "@flamework/core";
 import { BaseComponent, Component } from "@flamework/components";
 
 import { TAGS } from "shared/globals";
-import { Players } from "@rbxts/services";
-import { Events } from "client/network";
+import { onLocalCharacterAdded } from "client/utils/tasks";
 
 
 interface CookableBurger extends BasePart {
@@ -30,18 +29,28 @@ export class CookableBurgerComponent extends BaseComponent<{}, CookableBurger> i
 
         let burgerHeld = false;
 
-        Players.LocalPlayer.Character?.ChildAdded.Connect((node) => {
-            if (this.isInstanceABurger(node)) { // if we equipped burger
-                burgerHeld = true;
-                this.setProximityPromptEnabled(burgerHeld);
-            }
+        let childAdded: RBXScriptConnection | void = undefined;
+        let childRemoved: RBXScriptConnection | undefined | void = undefined;
+        onLocalCharacterAdded((character) => {
+            childAdded = character.ChildAdded.Connect((node) => {
+                if (this.isInstanceABurger(node)) { // if we equipped burger
+                    burgerHeld = true;
+                    this.setProximityPromptEnabled(burgerHeld);
+                }
+            })
+            childRemoved = character.ChildRemoved.Connect((node) => {
+                if (this.isInstanceABurger(node)) { // if we unequipped burger
+                    burgerHeld = false;
+                    this.setProximityPromptEnabled(burgerHeld);
+                }
+            })
+        }).Connect(() => {
+            if (childAdded) childAdded = childAdded.Disconnect();
+            if (childRemoved) childRemoved = childRemoved.Disconnect();
         })
-        Players.LocalPlayer.Character?.ChildRemoved.Connect((node) => {
-            if (this.isInstanceABurger(node)) { // if we unequipped burger
-                burgerHeld = false;
-                this.setProximityPromptEnabled(burgerHeld);
-            }
-        })
+
+
+
         this.instance.CanBeCollected.Changed.Connect(() => {
             this.setProximityPromptEnabled(burgerHeld);
         })

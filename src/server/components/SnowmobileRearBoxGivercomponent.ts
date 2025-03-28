@@ -8,23 +8,26 @@ import { createGUID } from "shared/utils/guid";
 import { PlayerExperienceService } from "server/services/PlayerExperienceService";
 
 
-interface BurgerBox extends Model {
-    ProximityPrompt: ProximityPrompt;
+interface SnowmobileRearBoxGiver extends Model {
+    Base: Part & {
+        ProximityPrompt: ProximityPrompt;
+    }
 }
 
-@Component({ tag: TAGS.ActivatableBurgerBoxComponent })
-export class ActivatableBurgerBoxComponent extends BaseComponent<{}, BurgerBox> implements OnStart {
+@Component({ tag: TAGS.SnowmobileRearBoxGiverComponent })
+export class SnowmobileRearBoxGiverComponent extends BaseComponent<{}, SnowmobileRearBoxGiver> implements OnStart {
+    private id = createGUID();
     constructor(private GuiAdornmentSerice: GuiAdornmentService, private PlayerExperienceService: PlayerExperienceService) {
         super();
     }
-    private id = createGUID();
+
     onStart() {
-        this.instance.ProximityPrompt.Triggered.Connect((player) => {
+        this.instance.Base.ProximityPrompt.Triggered.Connect((player) => {
             this.GuiAdornmentSerice.asyncCreateAdornmentText(player, {
-                richText: 'Acquired Burger Patty',
+                richText: 'Acquired Snowmobile Rear Box!',
             })
-            this.PlayerExperienceService.giveDoubletappedExperience(player, 2, 5000, this.id);
-            createToolAndGiveAndEquip(player, ASSET_IDS.CookableBurgerTool, ['DestroyOnDropComponent', 'UntouchableOnDropComponent'])
+            this.PlayerExperienceService.giveDoubletappedExperience(player, 25, 60000, this.id);
+            createToolAndGiveAndEquip(player, ASSET_IDS.SnowmobileRearBoxTool, ['DestroyOnDropComponent', 'UntouchableOnDropComponent']);
         })
     }
 

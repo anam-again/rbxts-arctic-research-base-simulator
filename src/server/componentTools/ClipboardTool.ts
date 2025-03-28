@@ -38,7 +38,6 @@ export class ClipboardTool extends BaseComponent<{}, Clipboard> implements OnSta
             track.Play();
         });
         this.instance.AncestryChanged.Connect((child, parent) => {
-            print('changed!')
             if (this.isOwnedByPlayer(child) && parent) {
                 const humanoid = parent.FindFirstChild('Humanoid') as Humanoid;
                 const leftHand = parent.FindFirstChild('LeftHand') as BasePart;
